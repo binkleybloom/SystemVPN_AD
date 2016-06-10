@@ -103,6 +103,7 @@ if __name__ == '__main__':
     # print "Network Location: " + networkLocation ## error checking
     while True:
         if (networkState(settings.testHostAddress)):
+            print "Case 1"
             on = main(on)
             sleep(10)
         else:
