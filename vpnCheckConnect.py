@@ -79,8 +79,8 @@ def main(on):
         if (checkVPNStatus(connectionName) == "Disconnected"):
             adName = lookupComputerObject()
             adPass = computerObjPass(adName)
-            # print "AD Name = " + adName
-            # print "AD Pass = " + adPass
+            print "AD Name = " + adName
+            print "AD Pass = " + adPass
             cmd_connectVPN = ['/usr/sbin/scutil', '--nc', 'start', connectionName, '--user', adName, '--password', adPass, '--secret', settings.sharedSecret]
             exec_connectVPN = subprocess.Popen(cmd_connectVPN, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             (vpnresult, trash) = exec_connectVPN.communicate()
