@@ -74,6 +74,7 @@ def computerObjPass(computerName):
     return compObjPass
 
 def main(on):
+    networkLocation = campusNetworkState();
     if (networkLocation != "Direct Access Inside"):
         if (checkVPNStatus(connectionName) == "Disconnected"):
             adName = lookupComputerObject()
@@ -99,7 +100,6 @@ def main(on):
 
 if __name__ == '__main__':
     connectionName = findVpnName(settings.campusVPN)
-    networkLocation = campusNetworkState();
     # print "Network Location: " + networkLocation ## error checking
     while True:
         if (networkState(settings.testHostAddress)):
@@ -109,4 +109,4 @@ if __name__ == '__main__':
         else:
             print "There is no active connection to the internet."
             sleep(10)
-            on = main(on)
+            on = False
