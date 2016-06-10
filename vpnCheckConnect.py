@@ -85,20 +85,17 @@ def main(on):
             (vpnresult, trash) = exec_connectVPN.communicate()
             # print vpnresult
             # print trash
-            on = False
-            return on
+            return False
 
         elif (checkVPNStatus(campusVPN) == "Connecting"):
             print "Waiting for VPN to connect..."
             sleep(5)
-            on = False
-            return on
+            return False
 
     else:
         if (on == False):
             print "We're on the campus network."
-            on = True
-            return on
+            return True
 
 if __name__ == '__main__':
     connectionName = findVpnName(settings.campusVPN)
