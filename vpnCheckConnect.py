@@ -45,7 +45,11 @@ def networkState(testHostAddress):
 # check if machine is on the campus network
 # custom SU server which will respond differently based on client IP address
 def campusNetworkState():
-    return urllib2.urlopen("http://dainside.ad.syr.edu").read()
+    try:
+        urllib2.urlopen("http://dainside.ad.syr.edu").read()
+        return "Direct Access Inside"
+    except:
+        return "Outside SU Network"
 
 # look up AD computer object name
 def lookupComputerObject():
