@@ -20,7 +20,7 @@ from time import sleep
 if not os.geteuid() == 0:
     sys.exit('Script must be run as root.')
 
-on = False # set initial state of 'on' internal network until verified.
+on = None # set initial state of 'on' internal network as unchecked.
 
 # search for exact name of VPN connection
 # tolerant of situations like "vpn name 1" etc.
@@ -110,6 +110,7 @@ if __name__ == '__main__':
             on = main(on)  # run main logic, recording bool state if we're 'on' the internal network.
             sleep(5)
         else:
-            print "There is no active connection to the internet."
+            if (on != True && on != False):
+                print "There is no active connection to the internet."
             sleep(5)
             on = False
