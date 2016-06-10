@@ -14,11 +14,13 @@
 #
 #########################
 
-import subprocess, os, socket, urllib2
-import settings
+import subprocess, os, socket, urllib2, sys, settings
 from time import sleep
 
-on = False
+if not os.geteuid() == 0:
+    sys.exit('Script must be run as root.')
+
+on = False # set initial state of 'on' internal network until verified.
 
 # search for exact name of VPN connection
 # tolerant of situations like "vpn name 1" etc.
@@ -29,6 +31,7 @@ def findVpnName(searchTerm):
     for line in vpnResultName:
         if (searchTerm in vpnResultName):
             pieces = vpnResultName.split('"')[1]
+            break
     # print pieces
     return pieces
 
@@ -44,12 +47,13 @@ def networkState(testHostAddress):
 
 # check if machine is on the campus network
 # custom SU server which will respond differently based on client IP address
+# http response code will be 200 if on campus, 403 if off.
 def campusNetworkState():
     try:
         urllib2.urlopen("http://dainside.ad.syr.edu").read()
-        return "Direct Access Inside"
+        return "Inside"
     except:
-        return "Outside SU Network"
+        return "Outside"
 
 # look up AD computer object name
 def lookupComputerObject():
@@ -59,7 +63,6 @@ def lookupComputerObject():
     for line in adComputerObj.splitlines():
         if ("Computer Account" in line):
             pieces = line.split()
-            #print pieces
     return pieces[-1]
 
 # check VPN status - returns "Disconnected", "Connecting", and "Connected" states
@@ -79,7 +82,7 @@ def computerObjPass(computerName):
 
 def main(on):
     networkLocation = campusNetworkState();
-    if (networkLocation != "Direct Access Inside"):
+    if (networkLocation != "Inside"):
         if (checkVPNStatus(connectionName) == "Disconnected"):
             adName = lookupComputerObject()
             adPass = computerObjPass(adName)
@@ -88,28 +91,25 @@ def main(on):
             cmd_connectVPN = ['/usr/sbin/scutil', '--nc', 'start', connectionName, '--user', adName, '--password', adPass, '--secret', settings.sharedSecret]
             exec_connectVPN = subprocess.Popen(cmd_connectVPN, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             (vpnresult, trash) = exec_connectVPN.communicate()
-            # print vpnresult
-            # print trash
-            return False
+            return False  # hands back 'external' state
 
         elif (checkVPNStatus(campusVPN) == "Connecting"):
             print "Waiting for VPN to connect..."
             sleep(5)
-            return False
+            return False  # hands back 'external' state
 
     else:
         if (on == False):
             print "We're on the campus network."
-            return True
+            return True  # hands back 'internal' state
 
 if __name__ == '__main__':
     connectionName = findVpnName(settings.campusVPN)
-    # print "Network Location: " + networkLocation ## error checking
     while True:
         if (networkState(settings.testHostAddress)):
-            on = main(on)
-            sleep(10)
+            on = main(on)  # run main logic, recording bool state if we're 'on' the internal network.
+            sleep(5)
         else:
             print "There is no active connection to the internet."
-            sleep(10)
+            sleep(5)
             on = False
