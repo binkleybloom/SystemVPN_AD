@@ -7,7 +7,6 @@ mkdir scripts
 
 # copy the items into the appriate locations and create the postinstall script
 # to load the launch daemon
-
 cp vpnCheckConnect.py root/usr/local/SystemVPN_AD/
 cp edu.syr.ad.vpnconnect.plist root/Library/LaunchDaemons/
 echo "#!/bin/bash\nlaunchctl load -w /Library/LaunchDaemons/edu.syr.vpnconnect.plist\nexit 0" > scripts/postinstall
