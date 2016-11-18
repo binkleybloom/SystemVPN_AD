@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Version number:"
+read PKGVER
+
 # construct the virtual root and script directories.
 mkdir -p root/usr/local/SystemVPN_AD
 mkdir -p root/Library/LaunchDaemons
@@ -19,9 +22,9 @@ chmod +x scripts/postinstall
 pkgbuild --root ./root \
 --scripts ./scripts \
 --identifier edu.syr.ad.vpnconnect \
---version 1.0 \
+--version $PKGVER \
 --filter "\.DS_Store" \
-vpnCheckConnect.pkg
+vpnCheckConnect-$PKGVER.pkg
 
 # clean up yer stuff.
 rm -Rf ./root
